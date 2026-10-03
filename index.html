@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness & Nutrition Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #000000;
+            --secondary: #ffffff;
+            --border: #e5e5e5;
+            --text-light: #666666;
+            --font-apple: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-apple);
+            background: var(--secondary);
+            color: var(--primary);
+            letter-spacing: -0.3px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            margin-bottom: 60px;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            background: var(--secondary);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--primary);
+            letter-spacing: 0.3px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font-apple);
+            font-size: 14px;
+            color: var(--primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--primary);
+            color: var(--secondary);
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-apple);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        button:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .schedule-item {
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+
+        .schedule-info { flex: 1; }
+
+        .schedule-day {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .schedule-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .schedule-sport {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .btn-delete {
+            background: #ff3b30;
+            color: white;
+            padding: 6px 10px;
+            width: auto;
+            border-radius: 6px;
+        }
+
+        .meals-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .meal-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            background: #fafafa;
+        }
+
+        .meal-type {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .meal-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .meal-recipe {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--primary);
+            margin-bottom: 12px;
+            padding: 14px;
+            background: var(--secondary);
+            border-radius: 6px;
+            border-left: 2px solid var(--primary);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .meal-recipe strong {
+            display: block;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+
+        .generating {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 32px 16px;
+            color: var(--text-light);
+        }
+
+        /* BUG FIX: Memperbaiki Grid Layout Nutrisi */
+        .nutrition-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .summary-item { text-align: center; }
+
+        .summary-label {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .summary-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .nutrition-summary { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">Fitness & Nutrition</div>
+            <div class="header-subtitle">Track your gym schedule & personalized meals</div>
+        </header>
+
+        <div class="main-grid">
+            <!-- GYM SCHEDULE SECTION -->
+            <div class="section">
+                <div class="section-title">Jadwal Gym Ku</div>
+                
+                <form id="scheduleForm" onsubmit="addSchedule(event)">
+                    <div class="form-group">
+                        <label for="day">Hari</label>
+                        <select id="day" required>
+                            <option value="">Pilih Hari</option>
+                            <option value="Senin">Senin</option>
+                            <option value="Selasa">Selasa</option>
+                            <option value="Rabu">Rabu</option>
+                            <option value="Kamis">Kamis</option>
+                            <option value="Jumat">Jumat</option>
+                            <option value="Sabtu">Sabtu</option>
+                            <option value="Minggu">Minggu</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">Judul Jadwal</label>
+                        <input type="text" id="title" placeholder="e.g., Upper Body Day" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sport">Nama Exercise</label>
+                        <input type="text" id="sport" placeholder="e.g., Pec Deck, Bench Press" required>
+                    </div>
+
+                    <button type="submit">+ Tambah Jadwal</button>
+                </form>
+
+                <div class="schedule-list" id="scheduleList"></div>
+            </div>
+
+            <!-- NUTRITION SECTION -->
+            <div class="section">
+                <div class="section-title">Rekomendasi Makanan</div>
+                
+                <form id="nutritionForm" onsubmit="generateMeals(event)">
+                    <div class="form-group">
+                        <label for="calories">Target Kalori Harian (kcal)</label>
+                        <input type="number" id="calories" placeholder="2000" value="2000" min="1000" max="5000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="diet">Preferensi Diet</label>
+                        <select id="diet">
+                            <option value="balanced">Balanced (Umum)</option>
+                            <option value="vegetarian">Vegetarian</option>
+                            <option value="vegan">Vegan</option>
+                            <option value="keto">Keto (Low Carb, High Fat)</option>
+                            <option value="high-protein">High Protein</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">🍽️ Generate Menu</button>
+                </form>
+
+                <div class="meals-container" id="mealsContainer">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🍽️</div>
+                        <div class="empty-state-text">Generate menu untuk melihat rekomendasi makanan</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- SECURE XSS HELPER ---
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        // --- SCHEDULE LOGIC ---
+        let schedules = JSON.parse(localStorage.getItem('gymSchedules')) || [];
+
+        function addSchedule(e) {
+            e.preventDefault();
+            const schedule = {
+                id: Date.now(),
+                day: document.getElementById('day').value,
+                title: document.getElementById('title').value,
+                sport: document.getElementById('sport').value
+            };
+            
+            schedules.push(schedule);
+            localStorage.setItem('gymSchedules', JSON.stringify(schedules));
+            renderSchedules();
+            document.getElementById('scheduleForm').reset();
+        }
+
+        function deleteSchedule(id) {
+            schedules = schedules.filter(s => s.id !== id);
+            localStorage.setItem('gymSchedules', JSON.stringify(schedules));
+            renderSchedules();
+        }
+
+        function renderSchedules() {
+            const list = document.getElementById('scheduleList');
+            if (schedules.length === 0) {
+                list.innerHTML = `<div class="empty-state"><div class="empty-state-text">Belum ada jadwal.</div></div>`;
+                return;
+            }
+            // BUG FIX: Added escapeHTML to prevent XSS attacks
+            list.innerHTML = schedules.map(s => `
+                <div class="schedule-item">
+                    <div class="schedule-info">
+                        <div class="schedule-day">${escapeHTML(s.day)}</div>
+                        <div class="schedule-title">${escapeHTML(s.title)}</div>
+                        <div class="schedule-sport">${escapeHTML(s.sport)}</div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteSchedule(${s.id})">Hapus</button>
+                </div>
+            `).join('');
+        }
+        renderSchedules();
+
+        // --- NUTRITION LOGIC ---
+        async function generateMeals(e) {
+            e.preventDefault();
+            const calories = parseInt(document.getElementById('calories').value);
+            const diet = document.getElementById('diet').value;
+            const container = document.getElementById('mealsContainer');
+            
+            container.innerHTML = '<div class="generating"><span class="spinner"></span>Generating menu...</div>';
+            
+            try {
+                const meals = await fetchMeals(calories, diet);
+                renderMeals(meals);
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Error loading meals. Please try again.</div></div>';
+            }
+        }
+
+        // BUG FIX: Dynamic Macros based on Calorie goal and Diet type
+        function calculateMacros(targetCalories, dietType) {
+            let pRatio = 0.3, cRatio = 0.4, fRatio = 0.3; // Balanced Default
+            
+            if (dietType === 'high-protein') { pRatio = 0.45; cRatio = 0.35; fRatio = 0.2; }
+            if (dietType === 'keto') { pRatio = 0.25; cRatio = 0.05; fRatio = 0.7; }
+            
+            return {
+                protein: Math.round((targetCalories * pRatio) / 4) + 'g',
+                carbs: Math.round((targetCalories * cRatio) / 4) + 'g',
+                fats: Math.round((targetCalories * fRatio) / 9) + 'g'
+            };
+        }
+
+        async function fetchMeals(calories, diet) {
+            const cals = {
+                breakfast: Math.round(calories * 0.25),
+                lunch: Math.round(calories * 0.35),
+                snack: Math.round(calories * 0.15),
+                dinner: Math.round(calories * 0.25)
+            };
+
+            // BUG FIX: Mapping diet preference to TheMealDB Categories
+            let catBreakfast = 'Breakfast';
+            let catMain = ['Beef', 'Chicken', 'Seafood'];
+            
+            if (diet === 'vegetarian') catMain = ['Vegetarian'];
+            if (diet === 'vegan') { catBreakfast = 'Vegan'; catMain = ['Vegan']; }
+
+            function getRandomCat(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+            try {
+                // BUG FIX: Parallel fetching (Promise.all) agar load lebih cepat!
+                const [breakfast, lunch, snack, dinner] = await Promise.all([
+                    fetchMealByCategory(catBreakfast, cals.breakfast, diet),
+                    fetchMealByCategory(getRandomCat(catMain), cals.lunch, diet),
+                    fetchMealByCategory(diet === 'vegan' ? 'Vegan' : 'Vegetarian', cals.snack, diet),
+                    fetchMealByCategory(getRandomCat(catMain), cals.dinner, diet)
+                ]);
+
+                return [
+                    { type: 'Breakfast', ...breakfast },
+                    { type: 'Lunch', ...lunch },
+                    { type: 'Snack', ...snack },
+                    { type: 'Dinner', ...dinner }
+                ];
+            } catch (error) {
+                console.warn('API Limit/Error, falling back to mock data');
+                return getMockMeals(calories, diet); // Fallback if API fails
+            }
+        }
+
+        async function fetchMealByCategory(category, targetCalories, diet) {
+            // Get list of meals in the category
+            const listRes = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`);
+            const listData = await listRes.json();
+            
+            if (listData.meals) {
+                const randomMeal = listData.meals[Math.floor(Math.random() * listData.meals.length)];
+                
+                // Get full recipe
+                const detailRes = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${randomMeal.idMeal}`);
+                const detailData = await detailRes.json();
+                const meal = detailData.meals[0];
+                const macros = calculateMacros(targetCalories, diet);
+
+                return {
+                    title: meal.strMeal,
+                    recipe: formatRecipe(meal),
+                    calories: targetCalories,
+                    ...macros
+                };
+            }
+            throw new Error("Category fetch failed");
+        }
+
+        function formatRecipe(meal) {
+            let recipe = `<strong>Ingredients:</strong><br>`;
+            for (let i = 1; i <= 15; i++) {
+                const ing = meal[`strIngredient${i}`];
+                const meas = meal[`strMeasure${i}`];
+                if (ing && ing.trim()) { recipe += `• ${meas} ${ing}<br>`; }
+            }
+            return recipe;
+        }
+
+        function getMockMeals(calories, diet) {
+            // Fallback that actually respects the calories input & macros
+            const cals = { b: calories*0.25, l: calories*0.35, s: calories*0.15, d: calories*0.25 };
+            
+            return [
+                { type: 'Breakfast', title: 'Healthy Bowl', recipe: 'Campurkan oats dengan susu dan buah.', calories: cals.b, ...calculateMacros(cals.b, diet) },
+                { type: 'Lunch', title: 'Protein & Veggies', recipe: 'Panggang sumber protein, sajikan dengan sayur rebus.', calories: cals.l, ...calculateMacros(cals.l, diet) },
+                { type: 'Snack', title: 'Energy Snack', recipe: 'Kacang-kacangan atau yogurt murni.', calories: cals.s, ...calculateMacros(cals.s, diet) },
+                { type: 'Dinner', title: 'Light Meal', recipe: 'Tumis sayuran dan sumber protein rendah lemak.', calories: cals.d, ...calculateMacros(cals.d, diet) }
+            ];
+        }
+
+        function renderMeals(meals) {
+            const container = document.getElementById('mealsContainer');
+            container.innerHTML = meals.map(meal => `
+                <div class="meal-card">
+                    <div class="meal-type">${meal.type.toUpperCase()}</div>
+                    <div class="meal-name">${escapeHTML(meal.title)}</div>
+                    <div class="meal-recipe">${meal.recipe}</div>
+                    <div class="nutrition-summary">
+                        <div class="summary-item">
+                            <div class="summary-label">Kalori</div>
+                            <div class="summary-value">${Math.round(meal.calories)}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Protein</div>
+                            <div class="summary-value">${meal.protein}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Carbs</div>
+                            <div class="summary-value">${meal.carbs}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Fats</div>
+                            <div class="summary-value">${meal.fats}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
